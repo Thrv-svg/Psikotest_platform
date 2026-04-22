@@ -1,3 +1,18 @@
+async function fetchWithAuth(url, options = {}) {
+    const token = localStorage.getItem('talentflow_token');
+    const defaultHeaders = { 'Content-Type': 'application/json' };
+    if (token) defaultHeaders['Authorization'] = `Bearer ${token}`;
+    const config = { ...options, headers: { ...defaultHeaders, ...options.headers } };
+    const response = await fetch(url, config);
+    if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('talentflow_user');
+        localStorage.removeItem('talentflow_token');
+        window.location.href = '../index.html';
+        throw new Error('Sesi tidak valid.');
+    }
+    return response;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
   // ─── CEK SESI LOGIN & STRICT ROLE GUARD (ADMIN) ───
@@ -263,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tableBodyAll = document.getElementById('allApplicantTableBody'); 
 
     try {
-      const response = await fetch('http://localhost:3000/api/pelamar');
+      const response = await fetchWithAuth('http://localhost:3000/api/pelamar');
       const data = await response.json(); 
       
       if (tableBodyRecent) tableBodyRecent.innerHTML = ''; 
@@ -614,7 +629,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!kuisTableBody) return;
 
     try {
-      const response = await fetch('http://localhost:3000/api/admin/kuis');
+      const response = await fetchWithAuth('http://localhost:3000/api/admin/kuis');
       const result = await response.json();
 
       if (result.success) {
@@ -791,7 +806,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!performaTableBody) return; // Abaikan jika bukan di halaman ini
     
     try {
-      const response = await fetch('http://localhost:3000/api/admin/performa-kuis');
+      const response = await fetchWithAuth('http://localhost:3000/api/admin/performa-kuis');
       const result = await response.json();
       
       if (result.success) {
@@ -1098,7 +1113,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadJobTargetsEdit() {
       if (!dynamicJobCheckboxesEdit) return;
       try {
-          const res = await fetch('http://localhost:3000/api/admin/pekerjaan');
+          const res = await fetchWithAuth('http://localhost:3000/api/admin/pekerjaan');
           const result = await res.json();
           if (result.success) {
               dynamicJobCheckboxesEdit.innerHTML = '';
@@ -1271,7 +1286,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!laporanPsikogramBody) return;
       
       try {
-          const response = await fetch('http://localhost:3000/api/admin/laporan-psikogram');
+          const response = await fetchWithAuth('http://localhost:3000/api/admin/laporan-psikogram');
           const result = await response.json();
           
           if (result.success) {
@@ -1523,7 +1538,7 @@ document.addEventListener('DOMContentLoaded', () => {
           btnSimpan.disabled = true;
 
           try {
-              const response = await fetch('http://localhost:3000/api/admin/kuis', {
+              const response = await fetchWithAuth('http://localhost:3000/api/admin/kuis', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify(payload)
@@ -1715,7 +1730,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.loadQuizListForBank = async function() {
       if (!scrollableQuizList) return;
       try {
-          const res = await fetch('http://localhost:3000/api/admin/kuis');
+          const res = await fetchWithAuth('http://localhost:3000/api/admin/kuis');
           const result = await res.json();
           
           if(result.success) {
@@ -1976,7 +1991,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           btnSimpanSoal.innerText = "Menyimpan..."; btnSimpanSoal.disabled = true;
           try {
-              const res = await fetch('http://localhost:3000/api/admin/soal', {
+              const res = await fetchWithAuth('http://localhost:3000/api/admin/soal', {
                   method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
               });
               const result = await res.json();
@@ -2004,7 +2019,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Fungsi menarik data dari Node.js API
   async function loadReferensiIlmu() {
       try {
-          const res = await fetch('http://localhost:3000/api/admin/referensi-ilmu');
+          const res = await fetchWithAuth('http://localhost:3000/api/admin/referensi-ilmu');
           const result = await res.json();
           if (result.success) {
               REFERENSI_ILMU = result.data;
@@ -2088,7 +2103,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadJobTargets() {
       if (!dynamicJobCheckboxesAdd) return;
       try {
-          const res = await fetch('http://localhost:3000/api/admin/pekerjaan');
+          const res = await fetchWithAuth('http://localhost:3000/api/admin/pekerjaan');
           const result = await res.json();
           
           if (result.success) {
@@ -2132,7 +2147,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Menghubungi API Dashboard...");
         
         // 2. Tarik data dari server (Endpoint ini sudah ada di server.js Anda)
-        const response = await fetch('http://localhost:3000/api/admin/dashboard-stats');
+        const response = await fetchWithAuth('http://localhost:3000/api/admin/dashboard-stats');
         
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
@@ -2227,7 +2242,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!container) return; // Hentikan jika bukan di halaman dashboard
 
     try {
-        const response = await fetch('http://localhost:3000/api/admin/performa-kuis');
+        const response = await fetchWithAuth('http://localhost:3000/api/admin/performa-kuis');
         const result = await response.json();
 
         if (result.success && result.data.length > 0) {
@@ -2286,7 +2301,7 @@ document.addEventListener('DOMContentLoaded', () => {
       discTableBody.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--muted);">Memuat data...</div>';
       
       try {
-          const res = await fetch('http://localhost:3000/api/admin/soal-disc');
+          const res = await fetchWithAuth('http://localhost:3000/api/admin/soal-disc');
           const result = await res.json();
           
           if (result.success) {
@@ -2403,7 +2418,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           try {
               // Kirim ke endpoint khusus DISC
-              const res = await fetch('http://localhost:3000/api/admin/soal-disc', {
+              const res = await fetchWithAuth('http://localhost:3000/api/admin/soal-disc', {
                   method: 'POST', 
                   headers: { 'Content-Type': 'application/json' }, 
                   body: JSON.stringify(payload)

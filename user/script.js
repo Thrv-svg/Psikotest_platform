@@ -1,3 +1,18 @@
+async function fetchWithAuth(url, options = {}) {
+    const token = localStorage.getItem('talentflow_token');
+    const defaultHeaders = { 'Content-Type': 'application/json' };
+    if (token) defaultHeaders['Authorization'] = `Bearer ${token}`;
+    const config = { ...options, headers: { ...defaultHeaders, ...options.headers } };
+    const response = await fetch(url, config);
+    if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('talentflow_user');
+        localStorage.removeItem('talentflow_token');
+        window.location.href = '../index.html';
+        throw new Error('Sesi tidak valid.');
+    }
+    return response;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   // ─── 1. CEK SESI LOGIN & STRICT ROLE GUARD ───
   const userDataString = localStorage.getItem('talentflow_user');
@@ -22,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 1. Cek Status Pekerjaan Pelamar Saat Ini
   async function checkJobStatus() {
       try {
-          const res = await fetch(`http://localhost:3000/api/user/profil/${pelamarId}`);
+          const res = await fetchWithAuth(`http://localhost:3000/api/user/profil/${pelamarId}`);
           const result = await res.json();
 
           if (result.success) {
@@ -58,7 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 2. Tarik dan Kelompokkan Pekerjaan Berdasarkan Abjad
   async function loadAlphabeticalJobs() {
       try {
-          const res = await fetch('http://localhost:3000/api/admin/pekerjaan');
+          const res = await fetchWithAuth('http://localhost:3000/api/admin/pekerjaan');
           const result = await res.json();
 
           if (result.success && result.data.length > 0) {
@@ -114,7 +129,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!confirm(`Anda yakin ingin melamar posisi: ${namaPosisi}?\nPilihan ini tidak dapat diubah nanti.`)) return;
 
       try {
-          const res = await fetch('http://localhost:3000/api/user/pilih-pekerjaan', {
+          const res = await fetchWithAuth('http://localhost:3000/api/user/pilih-pekerjaan', {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ pelamar_id: pelamarId, posisi_dilamar: namaPosisi })
@@ -174,7 +189,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       akademikGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--muted); padding: 20px;">Memuat daftar asesmen...</div>';
 
       // Panggil API khusus Pelamar yang memfilter berdasarkan Posisi
-      const resKuis = await fetch(`http://localhost:3000/api/user/kuis-tersedia/${pelamarId}`);
+      const resKuis = await fetchWithAuth(`http://localhost:3000/api/user/kuis-tersedia/${pelamarId}`);
       const dataKuis = await resKuis.json();
 
       console.log("KUIS DARI API:", dataKuis); // Cek data di Console (F12)
@@ -248,7 +263,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // ─── 5. AMBIL STATUS DARI DATABASE & KUNCI YANG SUDAH SELESAI ───
   try {
-    const response = await fetch(`http://localhost:3000/api/user/status-ujian/${pelamarId}`);
+    const response = await fetchWithAuth(`http://localhost:3000/api/user/status-ujian/${pelamarId}`);
     const data = await response.json();
 
     if (data.success) {
@@ -319,7 +334,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (discQuestionCountEl) {
       try {
           // Kita meminjam endpoint yang sama yang digunakan untuk meload soal DISC
-          const resDisc = await fetch('http://localhost:3000/api/user/soal-disc');
+          const resDisc = await fetchWithAuth('http://localhost:3000/api/user/soal-disc');
           const dataDisc = await resDisc.json();
           if (dataDisc.success) {
               discQuestionCountEl.innerText = dataDisc.data.length;

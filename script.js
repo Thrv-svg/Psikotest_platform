@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     
     // ==========================================
-    // 1. LOGIKA LOGIN (Sama seperti sebelumnya)
+    // 1. LOGIKA LOGIN (DENGAN JWT)
     // ==========================================
     const loginForm = document.getElementById('loginForm');
     const emailInput = document.getElementById('emailInput');
@@ -31,6 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const result = await response.json();
 
                 if (result.success) {
+                    // SIMPAN TOKEN DAN DATA USER
+                    localStorage.setItem('talentflow_token', result.token);
                     localStorage.setItem('talentflow_user', JSON.stringify(result.data));
 
                     if (result.data.role === 'admin' || result.data.role === 'hr') {
@@ -60,34 +62,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. LOGIKA REGISTRASI BARU (Bebas Bug)
     // ==========================================
     const registerForm = document.getElementById('registerForm');
-    const registerBtn = document.getElementById('registerBtn'); // Pastikan ID tombol daftar sesuai
+    const registerBtn = document.getElementById('registerBtn');
 
     if(registerForm) {
         registerForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Cegah reload halaman
+            e.preventDefault();
 
-            // Ubah tombol jadi status loading
             if (registerBtn) {
                 registerBtn.innerText = 'Memproses...';
                 registerBtn.disabled = true;
                 registerBtn.style.opacity = '0.7';
             }
 
-            // Kumpulkan Payload dengan aman
-            // Catatan: Pastikan ID (inputNama, inputNik, dll) sesuai dengan yang ada di register.html Anda
             const payload = {
                 nama_lengkap: document.getElementById('inputNama') ? document.getElementById('inputNama').value : '',
                 nik: document.getElementById('inputNik') ? document.getElementById('inputNik').value : '',
                 no_whatsapp: document.getElementById('inputWa') ? document.getElementById('inputWa').value : '',
                 email: document.getElementById('inputEmail') ? document.getElementById('inputEmail').value : '',
                 password: document.getElementById('inputPassword') ? document.getElementById('inputPassword').value : '',
-                
-                // FIX UTAMA: Karena form pemilihan pekerjaan dihapus, kita set otomatis:
                 posisi_dilamar: "Belum Ditentukan"
             };
 
             try {
-                // Tembak API Registrasi
                 const response = await fetch('http://localhost:3000/api/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -98,11 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (result.success) {
                     alert("Registrasi berhasil! Silakan masuk dengan akun baru Anda.");
-                    // Mengarahkan pengguna kembali ke halaman Login
                     window.location.href = 'index.html'; 
                 } else {
-                    alert(result.message || "Gagal melakukan registrasi. Periksa kembali data Anda.");
-                    // Kembalikan status tombol
+                    alert(result.message || "Gagal melakukan registrasi.");
                     if (registerBtn) {
                         registerBtn.innerText = 'Daftar Sekarang';
                         registerBtn.disabled = false;
@@ -111,8 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (error) {
                 console.error("Gagal registrasi:", error);
-                alert("Terjadi kesalahan sistem/koneksi. Pastikan server aktif.");
-                // Kembalikan status tombol
+                alert("Terjadi kesalahan sistem/koneksi.");
                 if (registerBtn) {
                     registerBtn.innerText = 'Daftar Sekarang';
                     registerBtn.disabled = false;
