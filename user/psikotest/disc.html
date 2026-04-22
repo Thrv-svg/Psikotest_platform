@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DISC Personality Test — TalentFlow</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../admin/style.css"> 
+  <link rel="stylesheet" href="../kuis/kuis.css"> 
+  
+  <style>
+    /* Custom DISC Tetrad UI - Disesuaikan persis dengan Tes Akademik */
+    .tetrad-container { display: flex; flex-direction: column; gap: 0; margin-bottom: 30px; }
+    
+    .tetrad-row {
+        display: grid; grid-template-columns: 1fr 90px 90px; gap: 15px;
+        background: transparent; border: 1px solid #1f2d45;
+        padding: 15px 20px; border-radius: 8px; align-items: center; transition: 0.2s;
+        margin-bottom: 12px;
+    }
+    
+    .tetrad-row:hover { border-color: #3b82f6; }
+    .tetrad-text { font-size: 15px; line-height: 1.5; color: #e8edf5; }
+    
+    .btn-disc {
+        padding: 8px; border-radius: 6px; font-weight: bold; font-size: 13px;
+        cursor: pointer; border: 1px solid #1f2d45; background: #111827;
+        color: #8fa0be; transition: all 0.2s; display: flex; justify-content: center;
+        align-items: center; gap: 6px;
+    }
+    
+    /* State: MOST (Paling Sesuai - Hijau) */
+    .btn-most:hover { border-color: #10b981; color: #10b981; background: rgba(16,185,129,0.05); }
+    .btn-most.selected { background: rgba(16,185,129,0.15); border-color: #10b981; color: #10b981; }
+    
+    /* State: LEAST (Paling Tidak Sesuai - Merah) */
+    .btn-least:hover { border-color: #ef4444; color: #ef4444; background: rgba(239,68,68,0.05); }
+    .btn-least.selected { background: rgba(239,68,68,0.15); border-color: #ef4444; color: #ef4444; }
+
+    /* Disable state saat kolom lain diklik */
+    .btn-disc.disabled { opacity: 0.2; cursor: not-allowed; pointer-events: none; }
+
+    @media screen and (max-width: 768px) {
+        .tetrad-row { grid-template-columns: 1fr; gap: 10px; padding: 15px; }
+        .tetrad-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="kuis-title">
+      <h2 id="teksJudulKuis">DISC Personality Test</h2>
+      <p id="teksSoalKuis">Soal 0 dari 0</p>
+    </div>
+    <div class="timer-badge">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span id="teksTimer">15:00</span>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="question-area" id="areaPertanyaan" style="display: none;">
+      <div class="q-header">
+        <div class="q-number" id="labelNomorSoal">Pertanyaan 1</div>
+        <div class="q-poin" style="background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3);">Tetrad Assessment</div>
+      </div>
+      <div class="q-text" id="teksPertanyaan">
+        Pilih satu pernyataan yang <strong>PALING SESUAI (Most)</strong> dan satu yang <strong>PALING TIDAK SESUAI (Least)</strong> dengan diri Anda.
+      </div>
+      
+      <div id="tetradContainer" class="tetrad-container"></div>
+
+      <div class="bottom-actions">
+        <button class="btn btn-outline" id="btnPrev">← Sebelumnya</button>
+        <button class="btn btn-primary" id="btnNext" disabled style="opacity: 0.5; cursor: not-allowed;">Selanjutnya →</button>
+      </div>
+      <button class="btn btn-primary" id="btnSubmit" style="width: 100%; margin-top: 15px; display: none;">Selesai & Kumpulkan</button>
+    </div>
+
+    <div class="nav-area">
+      <h3 style="margin: 0 0 10px 0; font-size: 16px;">Navigasi Soal</h3>
+      <div class="nav-grid" id="gridNavigasi"></div>
+      
+      <div style="margin-top: 20px; font-size: 13px; color: #8fa0be;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+            <span style="display:block; width:12px; height:12px; background:#10b981; border-radius:3px;"></span> Selesai
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <span style="display:block; width:12px; height:12px; background:transparent; border:1px solid #1f2d45; border-radius:3px;"></span> Belum Selesai
+        </div>
+      </div>
+
+      <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #1f2d45; font-size: 13px; color: var(--muted); line-height: 1.6;">
+        <strong>Instruksi:</strong> Anda wajib memilih tepat 1 "Most" (Sesuai) dan 1 "Least" (Tidak Sesuai) pada setiap nomor sebelum dapat melanjutkan ke soal berikutnya.
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="customModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center;">
+    <div style="background: #111827; border: 1px solid #1f2d45; border-radius: 12px; padding: 30px; max-width: 400px; text-align: center; width: 90%;">
+      <div id="modalIcon" style="margin: 0 auto 15px; width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center;"></div>
+      <h3 id="modalTitle" style="font-family: 'Syne'; margin-bottom: 10px; color: #fff; font-size: 20px;">Info</h3>
+      <p id="modalMessage" style="color: #8fa0be; font-size: 14px; margin-bottom: 25px; line-height: 1.5;"></p>
+      <button id="btnModalOk" class="btn btn-primary" style="width: 100%;">OK</button>
+    </div>
+  </div>
+
+  <script src="disc.js"></script>
+</body>
+</html>

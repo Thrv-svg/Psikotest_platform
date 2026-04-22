@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assessment Akademik — TalentFlow</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="kuis.css">
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="kuis-title">
+      <h2 id="teksJudulKuis">Memuat Modul...</h2>
+      <p id="teksSoalKuis">Soal 0 dari 0</p>
+    </div>
+    <div class="timer-badge">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span id="teksTimer">00:00:00</span>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="question-area" id="areaPertanyaan" style="display: none;">
+      <div class="q-header">
+        <div class="q-number" id="labelNomorSoal">Pertanyaan 1</div>
+        <div class="q-poin">Nilai Terbobot</div>
+      </div>
+      <div class="q-text" id="teksPertanyaan">Loading...</div>
+      
+      <div id="opsiContainer" style="margin-bottom: 25px;">
+        </div>
+
+      <label class="ragu-btn-wrapper" id="raguLabel">
+        <input type="checkbox" id="chkRagu">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        Saya Ragu-ragu
+      </label>
+
+      <div class="bottom-actions">
+        <button class="btn btn-outline" id="btnPrev">← Sebelumnya</button>
+        <button class="btn btn-primary" id="btnNext">Selanjutnya →</button>
+      </div>
+      <button class="btn btn-primary" id="btnSubmit" style="width: 100%; margin-top: 15px; display: none;">Selesai & Kumpulkan</button>
+    </div>
+
+    <div class="nav-area">
+      <h3 style="margin: 0 0 10px 0; font-size: 16px;">Navigasi Soal</h3>
+      <div class="nav-grid" id="gridNavigasi"></div>
+      <div style="margin-top: 20px; font-size: 13px; color: #8fa0be;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;"><span style="display:block; width:12px; height:12px; background:#10b981; border-radius:3px;"></span> Dijawab</div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;"><span style="display:block; width:12px; height:12px; background:#f59e0b; border-radius:3px;"></span> Ragu-ragu</div>
+        <div style="display:flex; align-items:center; gap:8px;"><span style="display:block; width:12px; height:12px; background:transparent; border:1px solid #1f2d45; border-radius:3px;"></span> Belum Dijawab</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="customModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center;">
+    <div style="background: #111827; border: 1px solid #1f2d45; border-radius: 12px; padding: 30px; max-width: 400px; text-align: center; width: 90%;">
+      <div id="modalIcon" style="margin: 0 auto 15px; width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center;"></div>
+      <h3 id="modalTitle" style="font-family: 'Syne'; margin-bottom: 10px; color: #fff; font-size: 20px;">Info</h3>
+      <p id="modalMessage" style="color: #8fa0be; font-size: 14px; margin-bottom: 25px; line-height: 1.5;"></p>
+      <button id="btnModalOk" class="btn btn-primary" style="width: 100%;">OK</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="confirmModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center;">
+    <div style="background: #111827; border: 1px solid #1f2d45; border-radius: 12px; padding: 30px; max-width: 400px; text-align: center; width: 90%;">
+      <div style="margin: 0 auto 15px; width: 60px; height: 60px; border-radius: 50%; background: rgba(245,158,11,0.15); color: #f59e0b; display: grid; place-items: center;">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="30" height="30"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <h3 style="font-family: 'Syne'; margin-bottom: 10px; color: #fff; font-size: 20px;">Konfirmasi Pengumpulan</h3>
+      <p id="confirmMessage" style="color: #8fa0be; font-size: 14px; margin-bottom: 25px; line-height: 1.5;"></p>
+      <div style="display: flex; gap: 10px;">
+        <button id="btnConfirmNo" class="btn btn-outline" style="flex: 1;">Batal</button>
+        <button id="btnConfirmYes" class="btn btn-primary" style="flex: 1; background: #10b981; color: white;">Ya, Kumpulkan</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="kuis.js"></script>
+</body>
+</html>

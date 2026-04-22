@@ -1,0 +1,121 @@
+:root {
+  --bg:        #0b0f1a;
+  --surface:   #111827;
+  --card:      #161e2e;
+  --border:    #1f2d45;
+  --accent:    #f59e0b;
+  --text:      #e8edf5;
+  --muted:     #6b7a99;
+  --soft:      #8fa0be;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  /* Tambahan efek background pola (opsional) */
+  background-image: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+}
+
+.auth-container {
+  width: 100%; max-width: 420px;
+  padding: 20px;
+}
+
+.auth-box {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 40px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  animation: fadeUp 0.6s ease both;
+}
+
+.logo { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 30px; }
+.logo-icon { width: 40px; height: 40px; background: var(--accent); border-radius: 12px; display: grid; place-items: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; color: #000; }
+.logo-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 24px; }
+.logo-text span { color: var(--accent); }
+
+.auth-header { text-align: center; margin-bottom: 30px; }
+.auth-header h2 { font-family: 'Syne', sans-serif; font-size: 22px; margin-bottom: 8px; }
+.auth-header p { color: var(--soft); font-size: 14px; line-height: 1.5; }
+
+.input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.input-group label { font-size: 13px; font-weight: 500; color: var(--soft); }
+.input-group input, .input-group select {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); padding: 14px 16px; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: .2s;
+}
+.input-group input:focus, .input-group select:focus { border-color: var(--accent); background: rgba(245,158,11,.05); }
+
+.btn { width: 100%; padding: 14px; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: .2s; }
+.btn-primary { background: var(--accent); color: #000; margin-top: 10px; }
+.btn-primary:hover { background: #fbbf24; transform: translateY(-2px); }
+
+.auth-footer { text-align: center; margin-top: 24px; font-size: 13px; color: var(--muted); }
+.auth-footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
+.auth-footer a:hover { text-decoration: underline; }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+/* ─── KODE RESPONSIF (MOBILE-FRIENDLY) ─── */
+/* Jika lebar layar kurang dari 480px (Ukuran HP) */
+@media (max-width: 480px) {
+  .auth-box {
+    padding: 30px 20px; /* Kurangi jarak dalam (padding) agar tidak sempit */
+    border-radius: 16px;
+  }
+  .logo-text { font-size: 20px; }
+  .auth-header h2 { font-size: 20px; }
+}
+
+/* ─── KODE RESPONSIF DASHBOARD PELAMAR (USER) ─── */
+@media (max-width: 768px) {
+  /* Sembunyikan link navigasi atas agar tidak sesak */
+  .nav-links { display: none; } 
+  
+  .container { padding: 20px 16px; }
+  .welcome-section h1 { font-size: 24px; }
+  
+  /* Status lamaran & progress track jadi vertikal */
+  .status-header { flex-direction: column; gap: 12px; }
+  .progress-track { flex-direction: column; gap: 8px; }
+  .step { text-align: left; padding: 10px 16px; }
+
+  /* Kartu kuis jadi 1 kolom (menumpuk ke bawah) */
+  .quiz-grid { grid-template-columns: 1fr; gap: 16px; }
+}
+
+/* ─── KODE RESPONSIF HALAMAN KUIS ─── */
+@media (max-width: 768px) {
+  /* Layout kuis jadi 1 kolom (soal di atas, navigasi nomor di bawah) */
+  .quiz-layout { 
+    grid-template-columns: 1fr; 
+    gap: 20px; 
+    padding: 0 10px; 
+    margin: 15px auto; 
+  }
+
+  /* Topbar kuis (judul & timer) jadi vertikal */
+  .quiz-topbar { 
+    flex-direction: column; 
+    gap: 15px; 
+    align-items: flex-start; 
+    padding: 16px; 
+  }
+  
+  .timer-box { width: 100%; justify-content: center; }
+  #finishQuizBtn { width: 100%; }
+
+  /* Area pertanyaan dipersempit padding-nya agar tidak boros ruang */
+  .question-area { padding: 24px 20px; }
+  .options-group { gap: 10px; margin-bottom: 24px; }
+  .option-box { padding: 12px 16px; }
+
+  /* Sidebar nomor soal pindah ke bawah dan tidak lagi melayang (sticky) */
+  .quiz-sidebar { position: static; width: 100%; }
+  .q-grid { grid-template-columns: repeat(5, 1fr); }
+}

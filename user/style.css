@@ -1,0 +1,412 @@
+:root {
+  --bg:        #0b0f1a;
+  --surface:   #111827;
+  --card:      #161e2e;
+  --border:    #1f2d45;
+  --accent:    #f59e0b;
+  --accent2:   #3b82f6;
+  --accent3:   #10b981;
+  --danger:    #ef4444;
+  --text:      #e8edf5;
+  --muted:     #6b7a99;
+  --soft:      #8fa0be;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ─── TOP NAVIGATION ────────────────────────── */
+.user-nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+}
+.nav-container {
+  max-width: 1000px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 70px; padding: 0 20px;
+}
+
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon {
+  width: 32px; height: 32px; background: var(--accent);
+  border-radius: 8px; display: grid; place-items: center;
+  font-family: 'Syne', sans-serif; font-weight: 800; color: #000;
+}
+.logo-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; }
+.logo-text span { color: var(--accent); }
+
+.nav-links { display: flex; gap: 24px; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .2s; }
+.nav-links a:hover, .nav-links a.active { color: var(--text); }
+
+.user-profile { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
+.avatar { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+
+/* ─── KONTEN UTAMA ────────────────────────── */
+.container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; animation: fadeUp .5s ease both; }
+
+.welcome-section { margin-bottom: 30px; }
+.welcome-section h1 { font-family: 'Syne', sans-serif; font-size: 28px; margin-bottom: 8px; }
+.welcome-section p { color: var(--muted); font-size: 15px; max-width: 600px; line-height: 1.6; }
+
+.status-card {
+  /* --- Properti Asli Anda --- */
+  border: 1px solid var(--border); 
+  border-radius: 16px;
+  padding: 24px 30px; 
+  margin-bottom: 40px;
+
+  /* --- Tambahan Wajib untuk Radar JS --- */
+  position: relative; 
+  overflow: hidden;   
+  /* Kita tumpuk cahaya JS di atas, dan warna asli Anda di paling bawah */
+  background-image: 
+      var(--grad0, none),
+      var(--grad1, none),
+      var(--grad2, none),
+      var(--grad3, none),
+      linear-gradient(120deg, #161e2e 0%, #111827 100%); 
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.status-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+.status-header h3 { font-family: 'Syne', sans-serif; font-size: 20px; }
+.company-loc { color: var(--muted); font-size: 13px; margin-top: 4px; }
+.status-badge { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.status-badge.pending { background: rgba(245,158,11,.15); color: var(--accent); }
+
+.progress-track { display: flex; gap: 10px; }
+.step { flex: 1; padding: 12px; border-radius: 8px; background: var(--bg); border: 1px solid var(--border); font-size: 13px; text-align: center; font-weight: 500; color: var(--muted); }
+.step.done { background: rgba(16,185,129,.1); border-color: var(--accent3); color: var(--accent3); }
+.step.active { background: rgba(59,130,246,.1); border-color: var(--accent2); color: var(--accent2); }
+
+.section-title { font-family: 'Syne', sans-serif; font-size: 18px; margin-bottom: 16px; }
+
+.quiz-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.quiz-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 12px;
+  transition: transform .2s;
+}
+.quiz-card:not(.disabled):hover { transform: translateY(-4px); border-color: var(--accent2); }
+.quiz-icon { width: 44px; height: 44px; border-radius: 10px; display: grid; place-items: center; margin-bottom: 8px; }
+.quiz-icon svg { width: 22px; height: 22px; }
+.quiz-card h4 { font-size: 16px; font-weight: 600; }
+.quiz-card p { font-size: 13px; color: var(--muted); flex: 1; }
+
+.btn { width: 100%; padding: 10px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: .2s; }
+.btn-primary { background: var(--accent); color: #000; }
+.btn-primary:hover { background: #fbbf24; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+.quiz-card.disabled { opacity: 0.6; }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
+
+/* ─── MODAL UI STYLES ────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center; z-index: 1000;
+  opacity: 0; visibility: hidden; transition: all 0.3s ease;
+}
+.modal-overlay.show { opacity: 1; visibility: visible; }
+.modal-box {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+  width: 90%; max-width: 450px; transform: translateY(20px) scale(0.95);
+  transition: all 0.3s ease; box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+}
+.modal-overlay.show .modal-box { transform: translateY(0) scale(1); }
+.modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-header h3 { font-family: 'Syne', sans-serif; font-size: 18px; }
+.close-modal-btn { background: none; border: none; color: var(--muted); font-size: 26px; cursor: pointer; line-height: 1; transition: color .2s; }
+.close-modal-btn:hover { color: var(--danger); }
+.modal-body { padding: 24px; color: var(--soft); font-size: 14px; line-height: 1.6; }
+.modal-body strong { color: var(--accent); font-weight: 600; font-size: 15px; }
+.modal-footer { padding: 20px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; }
+.modal-footer .btn { width: auto; padding: 10px 18px; }
+
+/* ─── QUIZ MODE STYLES ───────────────────────── */
+body.quiz-mode { background: #070a13; }
+.quiz-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px; background: var(--surface); border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 50;
+}
+.quiz-title h3 { font-family: 'Syne', sans-serif; font-size: 16px; margin-bottom: 2px; }
+.question-progress { font-size: 12px; color: var(--muted); }
+.timer-box {
+  display: flex; align-items: center; gap: 8px; background: rgba(239,68,68,.15);
+  color: var(--danger); padding: 8px 16px; border-radius: 8px; font-weight: 700;
+  font-size: 18px; font-family: 'Syne', sans-serif; letter-spacing: 1px;
+}
+.timer-box svg { width: 20px; height: 20px; }
+.btn-sm { padding: 8px 16px; font-size: 12px; }
+
+.quiz-layout {
+  max-width: 1100px; margin: 30px auto; padding: 0 20px;
+  display: grid; grid-template-columns: 1fr 300px; gap: 30px;
+  animation: fadeUp .5s ease both;
+}
+
+.question-area { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 40px; }
+.question-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+.q-number { font-size: 16px; font-weight: 600; color: var(--accent2); }
+.q-points { font-size: 13px; color: var(--muted); background: var(--surface); padding: 4px 10px; border-radius: 6px; }
+.question-text { font-size: 16px; line-height: 1.6; margin-bottom: 30px; }
+
+.options-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px; }
+.option-item input { display: none; }
+.option-box {
+  display: flex; align-items: center; gap: 16px; padding: 16px 20px;
+  border: 1px solid var(--border); border-radius: 12px; cursor: pointer;
+  transition: all .2s; background: var(--surface);
+}
+.option-box:hover { border-color: var(--soft); }
+.opt-letter {
+  width: 30px; height: 30px; border-radius: 6px; background: var(--bg);
+  display: grid; place-items: center; font-weight: 600; font-size: 13px; color: var(--muted);
+}
+.opt-text { font-size: 15px; }
+
+.option-item input:checked + .option-box { border-color: var(--accent); background: rgba(245,158,11,.05); }
+.option-item input:checked + .option-box .opt-letter { background: var(--accent); color: #000; }
+
+.question-nav { display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 24px; }
+
+.quiz-sidebar {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 24px; height: fit-content;
+  position: sticky; top: 100px;
+}
+.quiz-sidebar h4 { font-family: 'Syne', sans-serif; font-size: 15px; margin-bottom: 16px; }
+.q-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px; }
+.q-box {
+  aspect-ratio: 1; border-radius: 6px; display: grid; place-items: center;
+  font-size: 13px; font-weight: 600; cursor: pointer; background: var(--surface);
+  border: 1px solid var(--border); color: var(--muted); transition: all .2s;
+}
+.q-box:hover { border-color: var(--soft); }
+.q-box.active { border-color: var(--accent2); color: var(--accent2); border-width: 2px; }
+.q-box.answered { background: var(--accent3); border-color: var(--accent3); color: #fff; }
+.q-box.flagged { background: var(--accent); border-color: var(--accent); color: #000; }
+
+.q-legend { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--border); padding-top: 16px; }
+.leg-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--soft); }
+.box-sample { width: 14px; height: 14px; border-radius: 3px; background: var(--surface); border: 1px solid var(--border); }
+.box-sample.answered { background: var(--accent3); border-color: var(--accent3); }
+.box-sample.flagged { background: var(--accent); border-color: var(--accent); }
+
+/* ─── KODE RESPONSIF (MOBILE-FRIENDLY) ─── */
+@media screen and (max-width: 768px) {
+  /* Dashboard User */
+  .nav-links { display: none; }
+  .quiz-grid { grid-template-columns: 1fr !important; }
+  .progress-track { flex-direction: column; gap: 10px; }
+  .status-header { flex-direction: column; gap: 12px; }
+
+  /* Layout Kuis: Paksa Navigasi ke Bawah Soal */
+  .quiz-layout { 
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    padding: 10px !important;
+  }
+  .question-area { width: 100% !important; padding: 24px 20px !important; }
+  
+  .quiz-sidebar { 
+    position: static !important; 
+    width: 100% !important;
+    order: 2 !important; /* Menaruhnya di urutan kedua (bawah) */
+  }
+
+  .quiz-topbar {
+    flex-direction: column !important;
+    height: auto !important;
+    padding: 15px !important;
+    gap: 12px !important;
+    text-align: center;
+  }
+  .timer-box, #finishQuizBtn { width: 100% !important; justify-content: center; }
+  
+  .q-grid { grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)) !important; }
+}
+
+/* --- WARNA NAVIGASI SOAL --- */
+
+/* 1. Warna Default (Belum dijawab, Belum ragu-ragu) */
+.quiz-nav-btn {
+  background: var(--bg-accent) !important;
+  color: var(--text-muted) !important;
+  border-color: transparent !important;
+}
+
+/* 2. Warna Saat Dijawab (Hijau) */
+.quiz-nav-btn.answered {
+  background: rgba(16,185,129,0.2) !important; /* Hijau pudar */
+  color: #10b981 !important; /* Hijau terang */
+  border-color: #10b981 !important;
+}
+
+/* 3. Warna Saat Ragu-ragu (Kuning/Oranye) */
+/* (Kelas doubtful menimpa kelas answered dalam urutan CSS) */
+.quiz-nav-btn.doubtful {
+  background: rgba(245,158,11,0.2) !important; /* Kuning pudar */
+  color: #f59e0b !important; /* Kuning terang */
+  border-color: #f59e0b !important;
+}
+
+/* 4. Warna Saat Sedang Dibuka (Active/Biru) */
+.quiz-nav-btn.active-number {
+  border-color: var(--accent) !important; /* Biru */
+  color: var(--text) !important;
+  background: var(--bg-hover) !important;
+}
+
+/* =======================================================
+   KUNCI MATI: MEMATIKAN ANIMASI PADA KARTU SELESAI 
+   ======================================================= */
+.quiz-card.disabled-card {
+    opacity: 0.5 !important; 
+    cursor: not-allowed !important; 
+}
+
+/* Membunuh paksa efek melayang dan menyala saat di-hover */
+.quiz-card.disabled-card:hover {
+    transform: translateY(0) scale(1) !important; 
+    box-shadow: none !important; 
+    border-color: #1f2d45 !important; 
+    background-color: #111827 !important; 
+}
+
+/* Mematikan sensor kursor untuk semua teks/ikon di dalam kartu */
+.quiz-card.disabled-card * {
+    pointer-events: none !important;
+}
+
+/* =========================================
+   BORDER GLOW EFFECT (KARTU KUIS)
+   ========================================= */
+.border-glow-card {
+  --edge-proximity: 0;
+  --cursor-angle: 45deg;
+  --edge-sensitivity: 30;
+  --color-sensitivity: calc(var(--edge-sensitivity) + 20);
+  --border-radius: 16px; /* Disesuaikan agar tidak terlalu membulat */
+  --glow-padding: 40px;
+  --cone-spread: 25;
+
+  position: relative;
+  border-radius: var(--border-radius);
+  isolation: isolate;
+  transform: translate3d(0, 0, 0.01px);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--card-bg, #0b0f1a); /* Warna latar dashboard Anda */
+  overflow: visible;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.border-glow-card:hover {
+  transform: translateY(-5px);
+}
+
+.border-glow-card::before,
+.border-glow-card::after,
+.border-glow-card > .edge-light {
+  content: ""; position: absolute; inset: 0;
+  border-radius: inherit; transition: opacity 0.25s ease-out; z-index: -1;
+}
+
+.border-glow-card:not(:hover)::before,
+.border-glow-card:not(:hover)::after,
+.border-glow-card:not(:hover) > .edge-light {
+  opacity: 0; transition: opacity 0.75s ease-in-out;
+}
+
+/* Mesh-gradient border */
+.border-glow-card::before {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--card-bg, #0b0f1a) 0 100%) padding-box,
+    linear-gradient(rgba(255,255,255,0) 0% 100%) border-box,
+    var(--gradient-one) border-box, var(--gradient-two) border-box,
+    var(--gradient-three) border-box, var(--gradient-four) border-box,
+    var(--gradient-five) border-box, var(--gradient-six) border-box,
+    var(--gradient-seven) border-box, var(--gradient-base) border-box;
+  opacity: calc((var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
+  mask-image: conic-gradient(from var(--cursor-angle) at center, black calc(var(--cone-spread) * 1%), transparent calc((var(--cone-spread) + 15) * 1%), transparent calc((100 - var(--cone-spread) - 15) * 1%), black calc((100 - var(--cone-spread)) * 1%));
+}
+
+/* Inner Background Fill */
+.border-glow-card::after {
+  border: 1px solid transparent;
+  background:
+    var(--gradient-one) padding-box, var(--gradient-two) padding-box,
+    var(--gradient-three) padding-box, var(--gradient-four) padding-box,
+    var(--gradient-five) padding-box, var(--gradient-six) padding-box,
+    var(--gradient-seven) padding-box, var(--gradient-base) padding-box;
+  mask-image: linear-gradient(to bottom, black, black), radial-gradient(ellipse at 50% 50%, black 40%, transparent 65%), radial-gradient(ellipse at 66% 66%, black 5%, transparent 40%), radial-gradient(ellipse at 33% 33%, black 5%, transparent 40%), radial-gradient(ellipse at 66% 33%, black 5%, transparent 40%), radial-gradient(ellipse at 33% 66%, black 5%, transparent 40%), conic-gradient(from var(--cursor-angle) at center, transparent 5%, black 15%, black 85%, transparent 95%);
+  mask-composite: subtract, add, add, add, add, add;
+  opacity: calc(0.3 * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
+  mix-blend-mode: soft-light;
+}
+
+/* Outer Glow Layer */
+.border-glow-card > .edge-light {
+  inset: calc(var(--glow-padding) * -1); pointer-events: none; z-index: 1;
+  mask-image: conic-gradient(from var(--cursor-angle) at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%);
+  opacity: calc((var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));
+  mix-blend-mode: plus-lighter;
+}
+
+.border-glow-card > .edge-light::before {
+  content: ""; position: absolute; inset: var(--glow-padding); border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 1px var(--glow-color), inset 0 0 1px 0 var(--glow-color-60),
+    inset 0 0 3px 0 var(--glow-color-50), inset 0 0 6px 0 var(--glow-color-40),
+    inset 0 0 15px 0 var(--glow-color-30), inset 0 0 25px 2px var(--glow-color-20),
+    inset 0 0 50px 2px var(--glow-color-10),
+    0 0 1px 0 var(--glow-color-60), 0 0 3px 0 var(--glow-color-50),
+    0 0 6px 0 var(--glow-color-40), 0 0 15px 0 var(--glow-color-30),
+    0 0 25px 2px var(--glow-color-20), 0 0 50px 2px var(--glow-color-10);
+}
+
+.border-glow-inner {
+  display: flex; flex-direction: column; position: relative; z-index: 2;
+  padding: 20px; height: 100%; border-radius: inherit;
+}
+
+/* =========================================
+   KOTAK PANEL ADMIN (DENGAN EFEK RADAR JS)
+   ========================================= */
+.panel {
+  background: var(--card); /* Warna dasar kotak */
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  
+  /* --- Tambahan Wajib untuk Radar JS --- */
+  position: relative; 
+  overflow: hidden;   
+  background-image: 
+      var(--grad0, none),
+      var(--grad1, none),
+      var(--grad2, none),
+      var(--grad3, none),
+      linear-gradient(120deg, #161e2e 0%, #111827 100%); 
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}

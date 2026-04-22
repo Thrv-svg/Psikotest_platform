@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TalentFlow — Portal Assessment & Analitik</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-icon" style="background: var(--accent2); color: #fff;">TF</div>
+    <div class="logo-text">Talent<span>Assessment</span></div>
+  </div>
+
+  <nav class="nav" id="sidebar-nav">
+    <div class="nav-label">Manajemen Ujian</div>
+
+    <a class="nav-item" href="#" data-page="bank-soal">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Bank Soal Akademik
+    </a>
+
+    <a class="nav-item" href="#" data-page="bank-disc">
+      <div class="setting-item-icon yellow" style="width: 24px; height: 24px; margin-right: 10px;">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </div>
+      <span class="nav-text">Bank Soal DISC</span>
+    </a>
+    
+    <a class="nav-item active" href="#" data-page="dashboard">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> 
+      Daftar Tes Akademik
+    </a>
+
+    <a class="nav-item" href="#" data-page="psikotes">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+      Psikotes <span class="badge blue">2</span>
+    </a>
+
+    <div class="nav-label" style="margin-top:15px">Analitik Asesmen</div>
+    <a class="nav-item" href="#" data-page="laporan">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Laporan Psikogram
+    </a>
+    <a class="nav-item" href="#" data-page="performa">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Performa Assessment <span class="badge green">Baru</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer" style="padding: 20px 24px;">
+    <a href="index.html" class="btn btn-outline" style="width: 100%; justify-content: center; padding: 12px 0;">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Dashboard Admin
+    </a>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <div class="icon-btn mobile-menu-btn" id="mobileToggle" style="display: none; margin-right: 10px;">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </div>
+    <div class="topbar-title">Manajemen Assessment</div>
+  </header>
+
+  <div class="content" id="main-content">
+    
+    <div id="page-dashboard" class="page-view active">
+      <div class="welcome-band" style="background: linear-gradient(120deg, #1e1b4b 0%, #111827 100%);">
+        <div class="welcome-text">
+          <h2>Pusat Asesmen Pelamar 🎯</h2>
+          <p>Kelola soal, pantau ujian yang sedang berlangsung, dan tinjau hasil tes pelamar secara <i>real-time</i>.</p>
+        </div>
+        <div class="welcome-actions">
+          <button class="btn btn-primary" id="btnOpenAddModal"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Buat Assessment Baru</button>
+        </div>
+      </div>
+
+      <div class="stats-row" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon blue"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+          </div>
+          <div class="stat-value"><h2 id="statTotalKuis">0</h2></div><div class="stat-label">Total Modul Assessment</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon yellow"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          </div>
+          <div class="stat-value"><h2 id="statKuisTerjadwal">0</h2></div><div class="stat-label">Assessment Terjadwal</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon green"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+          </div>
+          <div class="stat-value"><h2 id="statKuisAktif">0</h2></div><div class="stat-label">Assessment Aktif</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        
+        <div class="panel-head" style="justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+          <h3>Daftar Tes Tersedia</h3>
+          
+          <div style="display: flex; gap: 10px;">
+            <select id="filterRumpun" style="width: 220px; text-overflow: ellipsis; background: transparent; color: var(--muted); border: 1px solid var(--border); padding: 8px 12px; border-radius: 6px; cursor: pointer;">
+              <option value="all">Semua Rumpun Ilmu</option>
+            </select>
+            <select id="filterPohon" style="width: 220px; text-overflow: ellipsis; background: transparent; color: var(--muted); border: 1px solid var(--border); padding: 8px 12px; border-radius: 6px; cursor: pointer;">
+              <option value="all">Semua Pohon Ilmu</option>
+            </select>
+            <select id="filterProdi" style="width: 220px; text-overflow: ellipsis; background: transparent; color: var(--muted); border: 1px solid var(--border); padding: 8px 12px; border-radius: 6px; cursor: pointer;">
+              <option value="all">Semua Program Studi</option>
+            </select>
+            <div style="position: relative;">
+               </div>
+          </div>
+        </div>
+
+        <div class="applicant-table">
+          <div class="trow thead"><span>Nama Assessment & Modul</span><span>Target Posisi</span><span>Durasi / Soal</span><span>Status</span><span>Aksi</span></div>
+          
+
+
+          <div id="kuisTableBody">
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-bank-soal" class="page-view">
+      <div style="position: sticky; top: 0; background: var(--bg, #0b0f1a); z-index: 50; padding-bottom: 15px; padding-top: 20px; border-bottom: 1px solid var(--border, #1f2d45); margin-top: -20px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h1 style="margin: 0; font-family: 'Syne';">Bank Soal Akademik</h1>
+          <p style="margin: 5px 0 0 0; color: var(--muted); font-size: 14px;">Kelola pertanyaan, opsi jawaban, dan kunci untuk setiap modul tes.</p>
+        </div>
+        <button class="btn btn-primary" id="btnTambahSoal" style="width: auto; padding: 12px 20px; font-weight: bold; flex-shrink: 0;">+ Tambah Soal Baru</button>
+      </div>
+
+      <div style="margin-bottom: 25px; margin-top: 20px;">
+        <label style="display: block; color: var(--soft); font-size: 13px; font-weight: bold; margin-bottom: 10px;">Pilih Modul Assessment:</label>
+        
+        <div id="scrollableQuizList" class="scroll-stack-container" style="height: 380px; overflow-y: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 20px; padding-bottom: 100px;">
+            <div style="padding: 20px; text-align: center; color: var(--muted);">Memuat daftar assessment dari database...</div>
+        </div>
+      </div>
+
+      <div id="listSoalContainer" style="display: flex; flex-direction: column; gap: 15px;"></div>
+    </div>
+
+    <div id="page-bank-disc" class="page-view">
+      
+      <div class="welcome-band" style="padding: 20px 24px;">
+        <div class="welcome-text">
+          <h2 style="font-size: 18px; margin-bottom: 4px;">Bank Soal DISC</h2>
+          <p style="font-size: 13px;">Kelola tetrad pernyataan untuk asesmen kepribadian DISC.</p>
+        </div>
+        <div class="welcome-actions">
+          <button class="btn btn-primary" onclick="openDiscModal()">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Tambah Soal DISC
+          </button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Daftar Soal DISC</h3>
+        </div>
+        <div class="panel-body" style="padding: 0;">
+          <div class="trow thead" style="grid-template-columns: 50px 3fr 1fr 80px;">
+            <div class="cell">No</div>
+            <div class="cell">Pratinjau Pernyataan (Tetrad)</div>
+            <div class="cell">Status</div>
+            <div class="cell" style="text-align: right;">Aksi</div>
+          </div>
+          <div id="discTableBody" style="display: flex; flex-direction: column;">
+            <div style="padding: 30px; text-align: center; color: var(--muted); font-size: 13px;">Belum ada soal DISC.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-psikotes" class="page-view">
+      
+      <div class="welcome-band" style="background: linear-gradient(120deg, #4c1d95 0%, #1e1b4b 100%);">
+        <div class="welcome-text">
+          <h2>Pusat Asesmen Psikologis 🧠</h2>
+          <p>Kelola modul tes kepribadian, ketahanan kerja, dan gaya komunikasi pelamar seperti Kraepelin dan DISC Assessment.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head" style="justify-content: space-between;">
+          <h3>Daftar Alat Tes Psikologi Aktif</h3>
+        </div>
+        
+        <div class="applicant-table">
+          <div class="trow thead" style="grid-template-columns: 2.5fr 1fr 1.5fr 1fr;">
+            <span>Nama Tes & Deskripsi</span>
+            <span>Kategori</span>
+            <span>Durasi & Ketentuan</span>
+            <span>Status</span>
+          </div>
+          
+          <div id="psikotesTableBody"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-laporan" class="page-view">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Analitik Laporan Psikotes</h3>
+          <span class="count">Statistik dari 3 Alat Tes</span>
+        </div>
+        <div class="applicant-table">
+          <div class="trow thead"><span>Alat Tes Psikologi</span><span>Dimensi Utama</span><span>Total Peserta</span><span>Rata-Rata / Mayoritas Hasil</span><span>Aksi</span></div>
+          
+          <div id="laporanPsikogramBody">
+             <div style="padding: 30px; text-align: center; color: var(--muted);">Memuat data analitik...</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div id="page-performa" class="page-view">
+      <div class="panel">
+        <div class="panel-head" style="justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+          <div><h3>Analitik Performa Assessment Akademik</h3><span class="count" id="countPerforma">Memuat data...</span></div>
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <select id="sortKriteria" class="btn btn-outline" style="padding: 8px 14px; background: var(--surface); cursor: pointer;">
+              <option value="nilai">Urutkan: Rata-rata Skor</option>
+              <option value="peserta">Urutkan: Jumlah Peserta</option>
+            </select>
+            <select id="sortArah" class="btn btn-outline" style="padding: 8px 14px; background: var(--surface); cursor: pointer;">
+              <option value="desc">Tinggi ke Rendah (Z-A)</option>
+              <option value="asc">Rendah ke Tinggi (A-Z)</option>
+            </select>
+          </div>
+        </div>
+        <div class="applicant-table">
+          <div class="trow thead"><span>Modul Assessment Akademik</span><span>Rumpun Ilmu</span><span>Total Peserta</span><span>Rata-rata Skor</span><span>Aksi</span></div>
+          <div id="performaTableBody"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-overlay" id="kelolaKuisModal">
+  <div class="modal-box" style="max-width: 550px;">
+    <div class="modal-header">
+      <h3 id="modalKuisTitle">Kelola Assessment</h3>
+      <button class="close-modal-btn" id="closeKelolaModal">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 5px; font-size: 13px; color: var(--muted);">Target Posisi Pekerjaan</label>
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 6px; padding: 12px; max-height: 160px; overflow-y: auto;">
+            <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px; cursor: pointer; color: var(--accent2); font-weight: bold; font-size: 13px;">
+                <input type="checkbox" id="chkSemuaPosisiEdit" value="Semua Posisi">
+                Terapkan ke Semua Posisi
+            </label>
+            <hr style="border-color: var(--border); margin-bottom: 10px;">
+            <div id="dynamicJobCheckboxesEdit" style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="color: var(--muted); font-size: 12px;">Memuat posisi...</div>
+            </div>
+        </div>
+      </div>
+      <div class="input-group-admin" style="margin-bottom: 20px;">
+        <label>Jadwal Ujian (Jadwal Ulang)</label>
+        <input type="date" id="editJadwalKuis" style="color-scheme: dark;"> 
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+        <div class="input-group-admin">
+          <label>Total Bank Soal (Tersedia)</label>
+          <input 
+            type="number" 
+            id="editTotalBankSoal" 
+            readonly 
+            style="background: rgba(255,255,255,0.05); color: var(--muted); cursor: not-allowed; border: 1px dashed var(--border);" 
+            title="Dihitung otomatis oleh sistem"
+          >
+        </div>
+        <div class="input-group-admin">
+          <label>Soal yang Diujikan</label>
+          <input type="number" id="editSoalDiujikan" min="1" placeholder="Misal: 20">
+        </div>
+      </div>
+
+      <div style="background: rgba(59,130,246,0.1); padding: 14px; border-radius: 10px; border: 1px solid rgba(59,130,246,0.2); margin-bottom: 25px;">
+        <div style="display: flex; gap: 10px; align-items: flex-start;">
+          <svg fill="none" stroke="var(--accent2)" stroke-width="2" viewBox="0 0 24 24" width="20" height="20" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <div>
+            <strong style="color: var(--accent2); font-size: 13px;">Sistem Pengacakan Anti-Duplikat Aktif</strong>
+            <p style="color: var(--muted); font-size: 12px; margin-top: 4px; line-height: 1.5;">Jika Bank Soal lebih besar dari Soal Diujikan, sistem otomatis akan mengambil soal secara acak tanpa ada soal yang muncul 2 kali untuk setiap pelamar.</p>
+          </div>
+        </div>
+      </div>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--border);">
+        <button class="btn" id="btnHapusKuis" style="background: rgba(239,68,68,0.1); color: var(--danger);">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Hapus Assessment
+        </button>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-outline" id="btnBatalKuis">Batal</button>
+          <button class="btn btn-primary" id="btnSimpanKuis">Simpan Perubahan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="grafikModal">
+  <div class="modal-box" style="max-width: 700px; background: var(--bg);">
+    <div class="modal-header" style="border-bottom: 1px solid var(--border);">
+      <h3 id="grafikModalTitle">Visualisasi Data</h3>
+      <button class="close-modal-btn" id="closeGrafikModal">&times;</button>
+    </div>
+    <div class="modal-body" style="padding: 20px; position: relative; height: 400px; width: 100%; display: flex; justify-content: center;">
+      <canvas id="canvasGrafik"></canvas>
+    </div>
+    <div class="modal-footer" style="padding: 15px 20px; border-top: 1px solid var(--border); text-align: center;">
+      <p id="grafikKeterangan" style="font-size: 13px; color: var(--muted); margin: 0;"></p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="confirmDeleteModal" style="z-index: 1100;">
+  <div class="modal-box" style="max-width: 400px; text-align: center; padding: 30px 20px;">
+    
+    <div class="success-icon-wrap" style="background: rgba(239,68,68,0.1); color: var(--danger); margin-bottom: 20px;">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="35" height="35"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </div>
+    
+    <h3 style="font-family: 'Syne'; margin-bottom: 10px;">Hapus Assessment?</h3>
+    <p style="color: var(--muted); font-size: 14px; margin-bottom: 25px; line-height: 1.5;">Apakah Anda yakin ingin menghapus jadwal Assessment ini secara permanen dari Database? Tindakan ini tidak dapat dibatalkan.</p>
+    
+    <div style="display: flex; gap: 10px; justify-content: center;">
+      <button class="btn btn-outline" id="btnCancelDelete">Batal</button>
+      <button class="btn" id="btnConfirmDelete" style="background: var(--danger); color: white; border: none;">Ya, Hapus</button>
+    </div>
+    
+  </div>
+</div>
+
+<div class="modal-overlay" id="addQuizModal" style="z-index: 1200;">
+    <div class="modal-box" style="max-width: 500px; padding: 30px; text-align: left;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="font-family: 'Syne'; margin: 0;">Buat Assessment Baru</h3>
+        <button id="closeAddQuizModal" style="background: transparent; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">&times;</button>
+      </div>
+
+      <form id="addQuizForm">
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; font-size: 13px; color: var(--muted);">Nama Assessment (Misal: Tes Bahasa Inggris)</label>
+          <input type="text" id="inputNamaKuis" required style="width: 100%; padding: 10px; background: #0b0f1a; border: 1px solid #1f2d45; color: #fff; border-radius: 6px;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+          <div>
+            <label style="display: block; margin-bottom: 5px; font-size: 13px; color: var(--muted);">Rumpun Ilmu</label>
+            <select id="inputRumpun" required style="width: 100%; padding: 10px; background: #0b0f1a; border: 1px solid #1f2d45; color: #fff; border-radius: 6px; cursor: pointer;">
+              <option value="">-- Pilih Rumpun --</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; margin-bottom: 5px; font-size: 13px; color: var(--muted);">Pohon Ilmu</label>
+            <select id="inputPohon" required style="width: 100%; padding: 10px; background: #0b0f1a; border: 1px solid #1f2d45; color: #fff; border-radius: 6px; cursor: pointer;" disabled>
+              <option value="">Pilih Rumpun Dulu</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; margin-bottom: 5px; font-size: 13px; color: var(--muted);">Program Studi</label>
+            <select id="inputPosisi" required style="width: 100%; padding: 10px; background: #0b0f1a; border: 1px solid #1f2d45; color: #fff; border-radius: 6px; cursor: pointer;" disabled>
+              <option value="">Pilih Pohon Dulu</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; font-size: 13px; color: var(--muted);">Target Posisi Pekerjaan (Bisa pilih lebih dari satu)</label>
+          <div style="background: #0b0f1a; border: 1px solid #1f2d45; border-radius: 6px; padding: 12px; max-height: 180px; overflow-y: auto;">
+              <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px; cursor: pointer; color: var(--accent2); font-weight: bold; font-size: 13px;">
+                  <input type="checkbox" id="chkSemuaPosisiAdd" value="Semua Posisi">
+                  Terapkan ke Semua Posisi (Universal)
+              </label>
+              <hr style="border-color: #1f2d45; margin-bottom: 10px;">
+              <div id="dynamicJobCheckboxesAdd" style="display: flex; flex-direction: column; gap: 8px;">
+                  <div style="color: var(--muted); font-size: 12px;">Memuat posisi...</div>
+              </div>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+          <div>
+            <label style="display: block; margin-bottom: 5px; font-size: 13px; color: var(--muted);">Durasi (Menit)</label>
+            <input type="number" id="inputDurasi" required style="width: 100%; padding: 10px; background: #0b0f1a; border: 1px solid #1f2d45; color: #fff; border-radius: 6px;">
+          </div>
+          <div>
+            <label style="display: block; margin-bottom: 5px; font-size: 13px; color: var(--muted);">Jumlah Soal</label>
+            <input type="number" id="inputJmlSoal" required style="width: 100%; padding: 10px; background: #0b0f1a; border: 1px solid #1f2d45; color: #fff; border-radius: 6px;">
+          </div>
+          <div>
+            <label style="display: block; margin-bottom: 5px; font-size: 13px; color: var(--muted);">Bank Soal</label>
+            <input type="number" id="inputBankSoal" required style="width: 100%; padding: 10px; background: #0b0f1a; border: 1px solid #1f2d45; color: #fff; border-radius: 6px;">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 25px;">
+          <label style="display: block; margin-bottom: 5px; font-size: 13px; color: var(--muted);">Jadwal Ujian (Batas Akhir)</label>
+          <input type="date" id="inputJadwal" required style="width: 100%; padding: 10px; background: #0b0f1a; border: 1px solid #1f2d45; color: #fff; border-radius: 6px; color-scheme: dark;">
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="btnSimpanKuisBaru" style="width: 100%; color: #000; font-weight: bold; border: none; padding: 12px;">Simpan Assessment</button>
+      </form>
+    </div>
+  </div>
+  <div class="modal-overlay" id="successAddQuizModal" style="z-index: 1300;">
+    <div class="modal-box" style="max-width: 400px; text-align: center; padding: 30px 20px;">
+      
+      <div style="background: rgba(16,185,129,0.15); color: #10b981; margin: 0 auto 20px; width: 70px; height: 70px; border-radius: 50%; display: grid; place-items: center;">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="35" height="35"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      
+      <h3 style="font-family: 'Syne'; margin-bottom: 10px; font-size: 22px;">Berhasil!</h3>
+      <p style="color: var(--muted); font-size: 14px; margin-bottom: 25px; line-height: 1.6;">
+        Assessment baru telah berhasil ditambahkan ke dalam sistem database.
+      </p>
+      
+      <button class="btn btn-primary" id="btnOkSuccessQuiz" style="width: 100%; color: #000; font-weight: bold; border: none; padding: 12px; border-radius: 8px;">Lanjut</button>
+      
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="warningModal" style="z-index: 1500;">
+    <div class="modal-box" style="max-width: 400px; text-align: center; padding: 30px 20px;">
+      
+      <div style="background: rgba(245,158,11,0.15); color: #f59e0b; margin: 0 auto 20px; width: 70px; height: 70px; border-radius: 50%; display: grid; place-items: center;">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="35" height="35"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      
+      <h3 style="font-family: 'Syne'; margin-bottom: 10px; font-size: 22px;">Peringatan!</h3>
+      <p id="warningModalText" style="color: var(--muted); font-size: 14px; margin-bottom: 25px; line-height: 1.6;">
+        Pesan peringatan akan muncul di sini.
+      </p>
+      
+      <button class="btn" id="btnOkWarning" style="width: 100%; color: #000; background: #f59e0b; border: none; padding: 12px; border-radius: 8px; font-weight: bold;">Saya Mengerti</button>
+      
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="leaderboardModal" style="z-index: 1400;">
+    <div class="modal-box" style="max-width: 450px; padding: 0; overflow: hidden; background: #111827; border: 1px solid #1f2d45;">
+      
+      <div style="background: linear-gradient(135deg, #1e1b4b, #111827); padding: 20px 25px; border-bottom: 1px solid #1f2d45; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h3 style="margin: 0; font-family: 'Syne'; color: #fff; display: flex; align-items: center; gap: 10px;">
+            <svg fill="none" stroke="#f59e0b" stroke-width="2" viewBox="0 0 24 24" width="22" height="22"><path d="M8 21h8M12 17v4M7 4h10M5 4h14a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-1a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/></svg>
+            Top 5 Leaderboard
+          </h3>
+          <p id="leaderboardQuizName" style="margin: 5px 0 0 0; font-size: 13px; color: var(--muted);">Nama Kuis</p>
+        </div>
+        <button id="closeLeaderboardModal" style="background: transparent; border: none; color: #fff; font-size: 24px; cursor: pointer;">&times;</button>
+      </div>
+      
+      <div id="leaderboardList" style="padding: 10px 0;">
+        </div>
+      
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalFormSoal" style="z-index: 2000;">
+    <div class="modal-box" style="max-width: 600px; background: #111827;">
+       <div class="modal-header">
+         <h3 style="color: white; font-family: 'Syne';">Input Soal Baru</h3>
+         <button class="close-modal-btn" id="closeModalSoal">&times;</button>
+       </div>
+       <div class="modal-body" style="display: flex; flex-direction: column; gap: 15px;">
+          
+          <div>
+             <label style="color:var(--muted); font-size:13px; font-weight: bold;">Tipe Pertanyaan:</label>
+             <select id="inpTipeSoal" style="width:100%; padding:12px; background:var(--bg); border:1px solid var(--border); color:white; border-radius:8px; margin-top:8px; cursor:pointer;">
+                <option value="Pilihan Ganda">Pilihan Ganda (Otomatis Dinilai)</option>
+                <option value="Essay">Essay / Uraian (Penilaian Manual)</option>
+             </select>
+          </div>
+
+          <textarea id="inpPertanyaan" placeholder="Tuliskan pertanyaan di sini..." rows="4" style="width:100%; padding:15px; border-radius:8px; background:var(--bg); color:white; border:1px solid var(--border); font-family: 'DM Sans'; resize: none;"></textarea>
+          
+          <div id="pgOptionsContainer" style="display: flex; flex-direction: column; gap: 15px;">
+              <div id="dynamicOptionsWrapper" style="display: flex; flex-direction: column; gap: 10px;"></div>
+              
+              <button type="button" id="btnAddOption" class="btn btn-outline" style="width: fit-content; padding: 8px 15px; font-size: 12px; border-style: dashed;">+ Tambah Opsi Lain</button>
+
+              <div>
+                 <label style="color:var(--muted); font-size:13px; font-weight: bold;">Kunci Jawaban yang Benar:</label>
+                 <select id="inpKunci" style="width:100%; padding:12px; background:var(--bg); border:1px solid var(--border); color:white; border-radius:8px; margin-top:8px;">
+                 </select>
+              </div>
+          </div>
+       </div>
+       <div class="modal-footer">
+          <button class="btn btn-primary" id="btnSimpanSoal" style="width: 100%;">Simpan ke Database</button>
+       </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="discModal">
+    <div class="modal-box" style="max-width: 600px;">
+       <div class="modal-header">
+          <h3 style="font-family: 'Syne'; font-size: 16px;">Tambah Soal DISC</h3>
+          <button class="close-modal-btn" onclick="closeDiscModal()">&times;</button>
+       </div>
+       <div class="modal-body">
+          <p style="font-size: 13px; color: var(--muted); margin-bottom: 20px;">
+            Masukkan 4 pernyataan. Petakan setiap pernyataan ke trait kepribadian yang sesuai (D, I, S, atau C). Pastikan tidak ada trait yang ganda dalam satu soal.
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 15px;" id="discInputsWrapper">
+            
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <select class="disc-trait-select" style="padding: 12px; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 8px; width: 120px;">
+                <option value="D">Dominance</option>
+                <option value="I">Influence</option>
+                <option value="S">Steadiness</option>
+                <option value="C">Compliance</option>
+                <option value="*" style="color:red;">Asterisk (*)</option>
+              </select>
+              <input type="text" class="disc-statement-input" placeholder="Pernyataan 1..." style="flex: 1; padding: 12px; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 8px;">
+            </div>
+
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <select class="disc-trait-select" style="padding: 12px; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 8px; width: 120px;">
+                <option value="D">Dominance</option>
+                <option value="I" selected>Influence</option>
+                <option value="S">Steadiness</option>
+                <option value="C">Compliance</option>
+                <option value="*" style="color:red;">Asterisk (*)</option>
+              </select>
+              <input type="text" class="disc-statement-input" placeholder="Pernyataan 2..." style="flex: 1; padding: 12px; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 8px;">
+            </div>
+
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <select class="disc-trait-select" style="padding: 12px; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 8px; width: 120px;">
+                <option value="D">Dominance</option>
+                <option value="I">Influence</option>
+                <option value="S" selected>Steadiness</option>
+                <option value="C">Compliance</option>
+                <option value="*" style="color:red;">Asterisk (*)</option>
+              </select>
+              <input type="text" class="disc-statement-input" placeholder="Pernyataan 3..." style="flex: 1; padding: 12px; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 8px;">
+            </div>
+
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <select class="disc-trait-select" style="padding: 12px; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 8px; width: 120px;">
+                <option value="D">Dominance</option>
+                <option value="I">Influence</option>
+                <option value="S">Steadiness</option>
+                <option value="C" selected>Compliance</option>
+                <option value="*" style="color:red;">Asterisk (*)</option>
+              </select>
+              <input type="text" class="disc-statement-input" placeholder="Pernyataan 4..." style="flex: 1; padding: 12px; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 8px;">
+            </div>
+
+          </div>
+       </div>
+       <div class="modal-footer">
+          <button class="btn btn-outline" onclick="closeDiscModal()">Batal</button>
+          <button class="btn btn-primary" id="btnSaveDisc">Simpan Soal</button>
+       </div>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="script.js"></script>
+</body>
+</html>

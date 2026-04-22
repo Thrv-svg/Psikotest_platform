@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Akun — TalentFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Kunci layar agar tidak bisa di-scroll dan menyisakan ruang kosong */
+    body { display: flex; align-items: center; justify-content: center; height: 100vh; background: #000; padding: 20px; margin: 0; overflow: hidden; }
+    
+    /* =========================================
+       CSS AURORA / FLUID GLOW BACKGROUND 
+       ========================================= */
+    .aurora-container {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: #000; z-index: 0; overflow: hidden;
+    }
+    
+    .aurora-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(140px); /* Ini rahasia cairan halusnya */
+      opacity: 0.8;
+      animation: auroraFloat 15s infinite ease-in-out alternate;
+    }
+    
+    .blob-1 {
+      width: 80vw; height: 60vh;
+      background: #6d28d9; /* Violet terang seperti di video */
+      top: -20vh; left: -10vw;
+    }
+    
+    .blob-2 {
+      width: 70vw; height: 70vh;
+      background: #4338ca; /* Ungu kebiruan */
+      top: -10vh; right: -15vw;
+      animation-delay: -5s;
+      animation-duration: 20s;
+    }
+    
+    .blob-3 {
+      width: 50vw; height: 50vh;
+      background: #9333ea; /* Ungu murni */
+      top: 20vh; left: 20vw;
+      animation-delay: -10s;
+      animation-duration: 18s;
+      mix-blend-mode: screen;
+    }
+
+    @keyframes auroraFloat {
+      0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+      33% { transform: translate(5vw, 5vh) scale(1.1) rotate(5deg); }
+      66% { transform: translate(-5vw, 8vh) scale(0.9) rotate(-5deg); }
+      100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    }
+
+    /* =========================================
+       KACA TRANSPARAN (GLASSMORPHISM) FORM 
+       ========================================= */
+    .login-box { 
+        background: rgba(17, 24, 39, 0.4) !important; 
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.1) !important; 
+        padding: 40px; border-radius: 16px; width: 100%; max-width: 500px; 
+        box-shadow: 0 20px 40px rgba(0,0,0,0.8); position: relative; z-index: 10;
+    }
+    
+    .login-header { text-align: center; margin-bottom: 25px; }
+    .login-header h2 { font-family: 'Syne'; font-size: 24px; margin-top: 15px; color: #fff; }
+    .input-group { margin-bottom: 15px; text-align: left; }
+    .input-group label { display: block; font-size: 13px; color: #8fa0be; margin-bottom: 5px; }
+    
+    .input-group input { 
+        width: 100%; padding: 10px 14px; border-radius: 8px; 
+        background: rgba(11, 15, 26, 0.6) !important; 
+        border: 1px solid rgba(255,255,255,0.15) !important; 
+        color: #e8edf5; font-family: 'DM Sans'; transition: 0.2s; 
+    }
+    .input-group input:focus { border-color: #3b82f6 !important; outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .msg-box { font-size: 13px; margin-bottom: 15px; text-align: center; display: none; padding: 10px; border-radius: 6px; }
+    .msg-error { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+    .msg-success { background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
+
+    /* =========================================
+       TILTED CARD — perspective wrapper
+       Mirrors: tilted-card-figure + tilted-card-inner
+       ========================================= */
+    .card-wrapper {
+      perspective: 800px;           /* same as TiltedCard component */
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-box {
+        background: rgba(17, 24, 39, 0.4) !important;
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        padding: 40px; border-radius: 16px; width: 100%;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        /* 3D tilt engine hooks */
+        transform-style: preserve-3d;
+        will-change: transform;
+        transition: box-shadow 0.3s ease;
+    }
+
+    /* Tooltip that follows cursor — mirrors tilted-card-caption */
+    .tilt-tooltip {
+      pointer-events: none;
+      position: fixed;
+      background: #fff;
+      color: #2d2d2d;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: 'DM Sans', sans-serif;
+      opacity: 0;
+      z-index: 999;
+      transition: opacity 0.2s ease;
+      transform: translateZ(0);
+      white-space: nowrap;
+    }
+
+    /* =========================================
+       GRADIENT MAGIC TEXT — TF BADGE
+       ========================================= */
+    .tf-badge {
+      width: 56px; height: 56px; border-radius: 14px;
+      display: inline-grid; place-items: center; margin: 0 auto;
+      background: rgba(255,255,255,0.06);
+      position: relative;
+      animation: tfGlow 8s ease-in-out infinite alternate;
+    }
+    .tf-badge::before {
+      content: ''; position: absolute; inset: 0; border-radius: 14px; padding: 1.5px;
+      background: linear-gradient(to right, #5227FF, #FF9FFC, #B19EEF, #5227FF);
+      background-size: 300% 100%;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      animation: gradientShift 8s ease-in-out infinite alternate;
+    }
+    .tf-text {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px;
+      background-image: linear-gradient(to right, #5227FF, #FF9FFC, #B19EEF, #5227FF);
+      background-size: 300% 100%;
+      background-clip: text; -webkit-background-clip: text; color: transparent;
+      animation: gradientShift 8s ease-in-out infinite alternate;
+    }
+    @keyframes gradientShift {
+      0%   { background-position: 0%   50%; }
+      100% { background-position: 100% 50%; }
+    }
+    @keyframes tfGlow {
+      0%   { box-shadow: 0 0 18px rgba(82,39,255,0.3); }
+      50%  { box-shadow: 0 0 28px rgba(255,159,252,0.35); }
+      100% { box-shadow: 0 0 18px rgba(177,158,239,0.3); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="aurora-container">
+    <div class="aurora-blob blob-1"></div>
+    <div class="aurora-blob blob-2"></div>
+    <div class="aurora-blob blob-3"></div>
+  </div>
+
+  <!-- Tooltip cursor follower (tilted-card-caption equivalent) -->
+  <div class="tilt-tooltip" id="tiltTooltip">TalentFlow Register</div>
+
+  <figure class="card-wrapper" id="cardWrapper">
+  <div class="login-box" id="loginBox">
+    <div class="login-header">
+      <div class="tf-badge"><span class="tf-text">TF</span></div>
+      <h2>Buat Akun Pelamar</h2>
+    </div>
+
+    <form id="registerForm">
+      <div class="msg-box" id="regMsg"></div>
+      
+      <div class="input-group">
+        <label>Nama Lengkap</label>
+        <input type="text" id="regNama" placeholder="Misal: Budi Wibowo" required>
+      </div>
+
+      <div class="grid-2">
+        <div class="input-group">
+          <label>NIK (KTP)</label>
+          <input type="text" id="regNik" placeholder="16 Digit NIK" maxlength="16" pattern="\d*" title="Hanya masukkan angka" required>
+        </div>
+        <div class="input-group">
+          <label>No. WhatsApp</label>
+          <input type="text" id="regWa" placeholder="0812xxxxxx" required>
+        </div>
+      </div>
+      
+
+      <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="regEmail" placeholder="email@talentflow.com" required>
+      </div>
+      
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="regPassword" placeholder="Buat password (min. 6 karakter)" minlength="6" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="btnRegister" style="width: 100%; margin-top: 15px; background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">Daftar Sekarang</button>
+      
+      <p style="text-align: center; margin-top: 20px; font-size: 13px; color: #8fa0be;">
+        Sudah punya akun? <a href="index.html" style="color: #3b82f6; text-decoration: none; font-weight: bold;">Masuk di sini</a>
+      </p>
+    </form>
+
+    <!-- Glare overlay (mimics translateZ(30px) overlay in TiltedCard) -->
+    <div id="tiltGlare" style="
+      position:absolute; inset:0; border-radius:16px;
+      pointer-events:none; z-index:20; transition: background 0.1s;
+    "></div>
+  </div>
+  </figure><!-- end .card-wrapper -->
+
+  <!-- =========================================
+       TILTED CARD — Vanilla JS Spring Physics
+       Mirrors: damping:30, stiffness:100, mass:2
+       rotateAmplitude:12, scaleOnHover:1.05
+       ========================================= -->
+  <script>
+  (function () {
+    const card    = document.querySelector('.login-box');
+    const glare   = document.getElementById('tiltGlare');
+    const tooltip = document.getElementById('tiltTooltip');
+
+    // ── Spring config (exact match to TiltedCard component) ──
+    const DAMPING    = 30;
+    const STIFFNESS  = 100;
+    const MASS       = 2;
+    const AMPLITUDE  = 12;    // rotateAmplitude
+    const SCALE_MAX  = 1.05;  // scaleOnHover
+
+    // ── Spring state ──
+    const state = {
+      rotX:  { cur: 0, vel: 0, target: 0 },
+      rotY:  { cur: 0, vel: 0, target: 0 },
+      scale: { cur: 1, vel: 0, target: 1 }
+    };
+
+    let rafId  = null;
+    let active = false;
+    let lastTs = null;
+
+    // Semi-implicit Euler spring integrator (same physics as Framer Motion useSpring)
+    function springStep(s, dt) {
+      const dt_s = Math.min(dt, 64) / 1000;
+      const acc  = ((s.target - s.cur) * STIFFNESS - s.vel * DAMPING) / MASS;
+      s.vel += acc * dt_s;
+      s.cur += s.vel * dt_s;
+    }
+
+    function loop(ts) {
+      const dt = lastTs ? ts - lastTs : 16;
+      lastTs = ts;
+
+      springStep(state.rotX,  dt);
+      springStep(state.rotY,  dt);
+      springStep(state.scale, dt);
+
+      card.style.transform =
+        `rotateX(${state.rotX.cur.toFixed(3)}deg) ` +
+        `rotateY(${state.rotY.cur.toFixed(3)}deg) ` +
+        `scale(${state.scale.cur.toFixed(4)})`;
+
+      const settled =
+        Math.abs(state.rotX.vel)  < 0.01  && Math.abs(state.rotX.cur  - state.rotX.target)  < 0.01 &&
+        Math.abs(state.rotY.vel)  < 0.01  && Math.abs(state.rotY.cur  - state.rotY.target)  < 0.01 &&
+        Math.abs(state.scale.vel) < 0.001 && Math.abs(state.scale.cur - state.scale.target) < 0.001;
+
+      if (!settled || active) {
+        rafId = requestAnimationFrame(loop);
+      } else {
+        rafId = null; lastTs = null;
+      }
+    }
+
+    function startLoop() {
+      if (!rafId) rafId = requestAnimationFrame(loop);
+    }
+
+    // ── Mouse events ──
+    card.addEventListener('mouseenter', () => {
+      active = true;
+      state.scale.target = SCALE_MAX;
+      tooltip.style.opacity = '1';
+      startLoop();
+    });
+
+    card.addEventListener('mousemove', (e) => {
+      const rect    = card.getBoundingClientRect();
+      const offsetX = e.clientX - rect.left  - rect.width  / 2;
+      const offsetY = e.clientY - rect.top   - rect.height / 2;
+
+      // handleMouse() formula from TiltedCard
+      state.rotX.target = (offsetY / (rect.height / 2)) * -AMPLITUDE;
+      state.rotY.target = (offsetX / (rect.width  / 2)) *  AMPLITUDE;
+
+      // Cursor-following glare (mimics the overlay translateZ(30px))
+      const pctX = ((e.clientX - rect.left)  / rect.width  * 100).toFixed(1);
+      const pctY = ((e.clientY - rect.top)   / rect.height * 100).toFixed(1);
+      glare.style.background =
+        `radial-gradient(circle at ${pctX}% ${pctY}%, ` +
+        `rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 40%, transparent 70%)`;
+
+      // Tooltip follows cursor (tilted-card-caption behaviour)
+      tooltip.style.left = (e.clientX + 14) + 'px';
+      tooltip.style.top  = (e.clientY + 14) + 'px';
+
+      startLoop();
+    });
+
+    card.addEventListener('mouseleave', () => {
+      active = false;
+      state.rotX.target  = 0;
+      state.rotY.target  = 0;
+      state.scale.target = 1;
+      glare.style.background = 'none';
+      tooltip.style.opacity  = '0';
+      startLoop();
+    });
+  })();
+  </script>
+
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const btnReg = document.getElementById('btnRegister');
+      const msgBox = document.getElementById('regMsg');
+      
+      btnReg.innerText = 'Memproses...';
+      btnReg.disabled = true;
+      msgBox.style.display = 'none';
+
+      const payload = {
+        nama_lengkap: document.getElementById('regNama').value,
+        nik: document.getElementById('regNik').value,
+        no_whatsapp: document.getElementById('regWa').value,
+        email: document.getElementById('regEmail').value,
+        password: document.getElementById('regPassword').value,
+        
+        // UBAH BARIS INI: Ganti pencarian elemen dengan string statis
+        posisi_dilamar: "Belum Ditentukan"
+      };
+
+      const nikValue = document.getElementById('regNik').value;
+
+      if (nikValue.length !== 16) {
+        msgBox.className = 'msg-box msg-error';
+        msgBox.innerText = "Gagal: NIK (KTP) harus terdiri dari tepat 16 digit angka!";
+        msgBox.style.display = 'block';
+        
+        btnReg.innerText = 'Daftar Sekarang';
+        btnReg.disabled = false;
+        return;
+      }
+
+      try {
+        const res = await fetch('http://localhost:3000/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          msgBox.className = 'msg-box msg-success';
+          msgBox.innerHTML = `<strong>Berhasil!</strong> ${data.message} Mengalihkan ke halaman login...`;
+          msgBox.style.display = 'block';
+          
+          setTimeout(() => { window.location.href = 'index.html'; }, 2000); 
+        } else {
+          msgBox.className = 'msg-box msg-error';
+          msgBox.innerText = data.message;
+          msgBox.style.display = 'block';
+          btnReg.innerText = 'Daftar Sekarang';
+          btnReg.disabled = false;
+        }
+      } catch (err) {
+        msgBox.className = 'msg-box msg-error';
+        msgBox.innerText = "Gagal terhubung ke server.";
+        msgBox.style.display = 'block';
+        btnReg.innerText = 'Daftar Sekarang';
+        btnReg.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
