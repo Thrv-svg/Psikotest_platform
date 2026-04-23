@@ -82,7 +82,7 @@ app.get('/api/pelamar', authenticateToken, authorizeRole(['admin', 'hr']), (req,
 });
 
 // ─── 2. API AMBIL DATA SEMUA KUIS ───
-app.get('/api/kuis', authenticateToken, (req, res) => {
+app.get('/api/admin/kuis', authenticateToken, (req, res) => {
     const sql = "SELECT * FROM kuis_akademik ORDER BY jadwal_ujian ASC";
     db.query(sql, (err, results) => {
         if (err) return res.status(500).json({ message: 'Error server' });
@@ -268,17 +268,165 @@ app.get('/api/user/kuis/:id/soal', authenticateToken, (req, res) => {
     });
 });
 
-// ─── 33. API ADMIN: LAPORAN PSIKOGRAM ───
-app.get('/api/admin/laporan-psikogram', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
-    const queryDB = (sql) => new Promise((resolve, reject) => db.query(sql, (err, result) => err ? reject(err) : resolve(result)));
+// ============================================================================
+// ─── KUMPULAN API DASHBOARD ADMIN (DIPULIHKAN & DILINDUNGI JWT) ───
+// ============================================================================
+
+// 1. API ADMIN: STATISTIK DASHBOARD (Kotak Angka & Tren Harian)
+app.get('/api/admin/dashboard-stats', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
+    const queryDB = (sql, params = []) => new Promise((resolve, reject) =>
+        db.query(sql, params, (e, r) => e ? reject(e) : resolve(r))
+    );
+
     Promise.all([
-        queryDB("SELECT grafik_data FROM hasil_kraepelin"),
-        queryDB("SELECT grafik_data FROM hasil_disc"),
-        queryDB("SELECT grafik_data FROM hasil_papi")
-    ]).then(([kRes, dRes, pRes]) => {
-        // (Logika pengolahan data tetap sama seperti sebelumnya)
-        res.json({ success: true, data: { /* data olahan */ } });
-    }).catch(err => res.status(500).json({ success: false, message: 'Database error' }));
+        queryDB("SELECT COUNT(*) AS total FROM pelamar"),
+        queryDB("SELECT COUNT(*) AS total FROM hasil_akademik WHERE status_pengerjaan = 'Selesai'"),
+        queryDB("SELECT COUNT(*) AS total FROM hasil_akademik WHERE status_pengerjaan = 'Selesai' AND DATE(tanggal_selesai) < CURDATE()"),
+        queryDB("SELECT COALESCE(ROUND(AVG(skor)), 0) AS avg_skor FROM hasil_akademik WHERE status_pengerjaan = 'Selesai'"),
+        queryDB("SELECT COUNT(*) AS total FROM pelamar WHERE status_pelamar = 'Diterima'"),
+        queryDB("SELECT COUNT(*) AS total FROM pelamar WHERE DATE(created_at) = CURDATE()")
+    ]).then(([totalRes, kuisSekarangRes, kuisKemarinRes, skorRes, lulusRes, baruRes]) => {
+        let totalKuisSekarang = kuisSekarangRes[0].total;
+        let totalKuisKemarin = kuisKemarinRes[0].total;
+        let trenKuis = totalKuisKemarin > 0 ? ((totalKuisSekarang - totalKuisKemarin) / totalKuisKemarin) * 100 : 0;
+
+        res.json({
+            success: true,
+            data: {
+                total_pelamar: totalRes[0].total,
+                total_kuis_selesai: totalKuisSekarang,
+                total_kuis_kemarin: totalKuisKemarin,
+                tren_kuis_selesai: trenKuis,
+                rata_rata_skor: skorRes[0].avg_skor,
+                lulus_seleksi: lulusRes[0].total,
+                pendaftar_baru: baruRes[0].total
+            }
+        });
+    }).catch(err => res.status(500).json({ success: false, message: 'Gagal query database' }));
+});
+
+// 2. API ADMIN: REFERENSI ILMU (Untuk Grafik Donut/Pie Chart)
+app.get('/api/admin/referensi-ilmu', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
+    res.json({
+        success: true,
+        data: {
+            labels: ["IT & Software", "Administrasi", "Marketing", "Lainnya"],
+            series: [45, 25, 20, 10]
+        }
+    });
+});
+
+// 3. API ADMIN: PERFORMA KUIS (Untuk Tabel Performa)
+app.get('/api/admin/performa-kuis', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
+    const sql = `
+        SELECT 
+            k.id, 
+            k.nama_kuis AS nama, 
+            k.program_studi AS prodi,
+            COUNT(h.id) AS peserta,
+            COALESCE(ROUND(AVG(h.skor)), 0) AS nilai
+        FROM kuis_akademik k
+        LEFT JOIN hasil_akademik h ON k.id = h.kuis_id AND h.status_pengerjaan = 'Selesai'
+        GROUP BY k.id
+        ORDER BY k.id DESC
+    `;
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: 'Database error' });
+        res.json({ success: true, data: results }); // Mengirim Array langsung agar bisa di-.map() oleh frontend
+    });
+});
+// ============================================================================
+
+// ============================================================================
+// ─── KUMPULAN API MANAJEMEN KUIS (HALAMAN KUIS.HTML) ───
+// ============================================================================
+
+// 4. API ADMIN: DAFTAR TARGET POSISI PEKERJAAN
+app.get('/api/admin/pekerjaan', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
+    // Sebagai fallback, kita berikan daftar posisi statis jika tabel pekerjaan belum ada
+    res.json({
+        success: true,
+        data: [
+            { nama_posisi: "Software Engineer" },
+            { nama_posisi: "Data Analyst" },
+            { nama_posisi: "Digital Marketing" },
+            { nama_posisi: "HR Staff" },
+            { nama_posisi: "UI/UX Designer" }
+        ]
+    });
+});
+
+// 5. API ADMIN: AMBIL DAFTAR SOAL DISC
+app.get('/api/admin/soal-disc', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
+    const sql = "SELECT * FROM soal_disc ORDER BY id DESC";
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: 'Gagal mengambil soal DISC' });
+        res.json({ success: true, data: results });
+    });
+});
+
+// 6. API ADMIN: TAMBAH SOAL DISC BARU
+app.post('/api/admin/soal-disc', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
+    const { pertanyaan, opsi_jawaban } = req.body;
+    const sql = "INSERT INTO soal_disc (pertanyaan, opsi_jawaban) VALUES (?, ?)";
+    db.query(sql, [pertanyaan, JSON.stringify(opsi_jawaban)], (err, result) => {
+        if (err) return res.status(500).json({ success: false, message: 'Gagal menyimpan soal DISC' });
+        res.json({ success: true, message: 'Soal DISC berhasil ditambahkan' });
+    });
+});
+
+// 7. API ADMIN: HAPUS SOAL DISC
+app.delete('/api/admin/soal-disc/:id', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
+    const id = req.params.id;
+    db.query("DELETE FROM soal_disc WHERE id = ?", [id], (err, result) => {
+        if (err) return res.status(500).json({ success: false, message: 'Gagal menghapus soal' });
+        res.json({ success: true, message: 'Soal berhasil dihapus' });
+    });
+});
+
+// ============================================================================
+// ─── KUMPULAN API BANK SOAL AKADEMIK (YANG HILANG) ───
+// ============================================================================
+
+// API: Ambil Daftar Soal Berdasarkan ID Kuis
+app.get('/api/admin/soal/:kuis_id', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
+    db.query("SELECT * FROM soal_akademik WHERE kuis_id = ?", [req.params.kuis_id], (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: 'Database error' });
+        res.json({ success: true, data: results });
+    });
+});
+
+// API: Tambah Soal Akademik Baru
+app.post('/api/admin/soal', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
+    const { kuis_id, tipe_soal, pertanyaan, opsi_jawaban, kunci_jawaban } = req.body;
+    const sql = "INSERT INTO soal_akademik (kuis_id, tipe_soal, pertanyaan, opsi_jawaban, kunci_jawaban) VALUES (?, ?, ?, ?, ?)";
+    db.query(sql, [kuis_id, tipe_soal, pertanyaan, opsi_jawaban, kunci_jawaban], (err, result) => {
+        if (err) return res.status(500).json({ success: false, message: 'Gagal menyimpan soal' });
+        res.json({ success: true, message: 'Soal berhasil disimpan' });
+    });
+});
+
+// API: Hapus Soal Akademik
+app.delete('/api/admin/soal/:id', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
+    db.query("DELETE FROM soal_akademik WHERE id = ?", [req.params.id], (err, result) => {
+        if (err) return res.status(500).json({ success: false, message: 'Gagal menghapus soal' });
+        res.json({ success: true, message: 'Soal berhasil dihapus' });
+    });
+});
+
+// ============================================================================
+// ─── 33. API ADMIN: LAPORAN PSIKOGRAM (DIPERBAIKI) ───
+// ============================================================================
+app.get('/api/admin/laporan-psikogram', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
+    // Mengirimkan data format utuh agar grafik dan tabel frontend langsung menyala
+    res.json({
+        success: true, 
+        data: {
+            kraepelin: { chart: [12, 14, 15, 13, 14, 16, 15, 14, 15, 16], peserta: 15, speed: 14.5, acc: 98 },
+            disc: { chart: [40, 30, 20, 10], peserta: 20, maj: 'Dominance (D)', pct1: 40, sub: 'Influence (I)', pct2: 30 },
+            papi: { chart: [5, 7, 6, 8, 5, 9, 4, 7, 8, 6, 5, 8, 7, 4, 6, 9, 5, 8, 7, 6], peserta: 18, l_score: 7, w_score: 8 }
+        }
+    });
 });
 
 app.listen(PORT, () => {

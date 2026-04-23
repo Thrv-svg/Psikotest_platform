@@ -489,7 +489,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
           // 2. Tarik Data Nyata dari MySQL
-          const response = await fetch(`http://localhost:3000/api/admin/pelamar/${nik}/detail`);
+          const response = await fetchWithAuth(`http://localhost:3000/api/admin/pelamar/${nik}/detail`);
           const result = await response.json();
 
           if (!result.success) throw new Error("Gagal mengambil data");
