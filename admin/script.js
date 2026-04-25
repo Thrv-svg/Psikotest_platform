@@ -1743,7 +1743,7 @@ document.addEventListener('DOMContentLoaded', () => {
               // Tarik jumlah soal NYATA dari database
               const quizzesWithRealCount = await Promise.all(result.data.map(async (kuis) => {
                   try {
-                      const resSoal = await fetch(`http://localhost:3000/api/admin/soal/${kuis.id}`);
+                      const resSoal = await fetchWithAuth(`http://localhost:3000/api/admin/soal/${kuis.id}`);
                       const soalResult = await resSoal.json();
                       const realCount = soalResult.success ? soalResult.data.length : 0;
                       return { ...kuis, realCount };

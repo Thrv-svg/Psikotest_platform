@@ -86,7 +86,7 @@ app.get('/api/admin/kuis', authenticateToken, (req, res) => {
     const sql = "SELECT * FROM kuis_akademik ORDER BY jadwal_ujian ASC";
     db.query(sql, (err, results) => {
         if (err) return res.status(500).json({ message: 'Error server' });
-        res.json(results);
+        res.json({ success: true, data: results });
     });
 });
 
@@ -268,6 +268,57 @@ app.get('/api/user/kuis/:id/soal', authenticateToken, (req, res) => {
     });
 });
 
+// ─── 21. API PELAMAR: AMBIL PROFIL & STATUS (DIPULIHKAN) ───
+app.get('/api/user/profil/:id', authenticateToken, (req, res) => {
+    db.query("SELECT * FROM pelamar WHERE id = ?", [req.params.id], (err, results) => {
+        if (err || results.length === 0) return res.status(404).json({ success: false, message: 'Profil tidak ditemukan' });
+        res.json({ success: true, data: results[0] });
+    });
+});
+
+// ─── 22. API PELAMAR: AMBIL STATUS UJIAN (DIPULIHKAN) ───
+app.get('/api/user/status-ujian/:id', authenticateToken, (req, res) => {
+    const pelamarId = req.params.id;
+    const queryDB = (sql, params) => new Promise((resolve, reject) => db.query(sql, params, (e, r) => e ? reject(e) : resolve(r)));
+    
+    Promise.all([
+        queryDB("SELECT kuis_id FROM hasil_akademik WHERE pelamar_id = ? AND status_pengerjaan = 'Selesai'", [pelamarId]),
+        queryDB("SELECT id FROM hasil_kraepelin WHERE pelamar_id = ?", [pelamarId]),
+        queryDB("SELECT id FROM hasil_disc WHERE pelamar_id = ?", [pelamarId]),
+        queryDB("SELECT id FROM hasil_papi WHERE pelamar_id = ?", [pelamarId])
+    ]).then(([akademik, kraepelin, disc, papi]) => {
+        res.json({
+            success: true,
+            akademik_selesai: akademik.map(a => a.kuis_id),
+            kraepelin_selesai: kraepelin.length > 0,
+            disc_selesai: disc.length > 0,
+            papi_selesai: papi.length > 0
+        });
+    }).catch(err => res.status(500).json({ success: false, message: 'Gagal mengambil status' }));
+});
+
+// ─── 23. API PELAMAR: AMBIL KUIS TERSEDIA (DIPULIHKAN) ───
+app.get('/api/user/kuis-tersedia/:id', authenticateToken, (req, res) => {
+    const pelamarId = req.params.id;
+    db.query("SELECT posisi_dilamar FROM pelamar WHERE id = ?", [pelamarId], (err, pRes) => {
+        if (err || pRes.length === 0) return res.status(404).json({ success: false, message: 'Pelamar tidak ditemukan' });
+        const posisi = pRes[0].posisi_dilamar;
+        const sql = "SELECT * FROM kuis_akademik WHERE target_posisi = 'Semua Posisi' OR target_posisi = ?";
+        db.query(sql, [posisi], (err, results) => {
+            if (err) return res.status(500).json({ success: false, message: 'Database error' });
+            res.json({ success: true, data: results });
+        });
+    });
+});
+
+// ─── 24. API PELAMAR: AMBIL SOAL DISC (DIPULIHKAN) ───
+app.get('/api/user/soal-disc', authenticateToken, (req, res) => {
+    db.query("SELECT * FROM soal_disc ORDER BY id ASC", (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: 'Database error' });
+        res.json({ success: true, data: results });
+    });
+});
+
 // ============================================================================
 // ─── KUMPULAN API DASHBOARD ADMIN (DIPULIHKAN & DILINDUNGI JWT) ───
 // ============================================================================
@@ -332,18 +383,12 @@ app.get('/api/admin/performa-kuis', authenticateToken, authorizeRole(['admin', '
     `;
     db.query(sql, (err, results) => {
         if (err) return res.status(500).json({ success: false, message: 'Database error' });
-        res.json({ success: true, data: results }); // Mengirim Array langsung agar bisa di-.map() oleh frontend
+        res.json({ success: true, data: results });
     });
 });
-// ============================================================================
-
-// ============================================================================
-// ─── KUMPULAN API MANAJEMEN KUIS (HALAMAN KUIS.HTML) ───
-// ============================================================================
 
 // 4. API ADMIN: DAFTAR TARGET POSISI PEKERJAAN
 app.get('/api/admin/pekerjaan', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
-    // Sebagai fallback, kita berikan daftar posisi statis jika tabel pekerjaan belum ada
     res.json({
         success: true,
         data: [
@@ -365,30 +410,7 @@ app.get('/api/admin/soal-disc', authenticateToken, authorizeRole(['admin', 'hr']
     });
 });
 
-// 6. API ADMIN: TAMBAH SOAL DISC BARU
-app.post('/api/admin/soal-disc', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
-    const { pertanyaan, opsi_jawaban } = req.body;
-    const sql = "INSERT INTO soal_disc (pertanyaan, opsi_jawaban) VALUES (?, ?)";
-    db.query(sql, [pertanyaan, JSON.stringify(opsi_jawaban)], (err, result) => {
-        if (err) return res.status(500).json({ success: false, message: 'Gagal menyimpan soal DISC' });
-        res.json({ success: true, message: 'Soal DISC berhasil ditambahkan' });
-    });
-});
-
-// 7. API ADMIN: HAPUS SOAL DISC
-app.delete('/api/admin/soal-disc/:id', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
-    const id = req.params.id;
-    db.query("DELETE FROM soal_disc WHERE id = ?", [id], (err, result) => {
-        if (err) return res.status(500).json({ success: false, message: 'Gagal menghapus soal' });
-        res.json({ success: true, message: 'Soal berhasil dihapus' });
-    });
-});
-
-// ============================================================================
-// ─── KUMPULAN API BANK SOAL AKADEMIK (YANG HILANG) ───
-// ============================================================================
-
-// API: Ambil Daftar Soal Berdasarkan ID Kuis
+// 388. KUMPULAN API BANK SOAL AKADEMIK
 app.get('/api/admin/soal/:kuis_id', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
     db.query("SELECT * FROM soal_akademik WHERE kuis_id = ?", [req.params.kuis_id], (err, results) => {
         if (err) return res.status(500).json({ success: false, message: 'Database error' });
@@ -396,29 +418,8 @@ app.get('/api/admin/soal/:kuis_id', authenticateToken, authorizeRole(['admin', '
     });
 });
 
-// API: Tambah Soal Akademik Baru
-app.post('/api/admin/soal', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
-    const { kuis_id, tipe_soal, pertanyaan, opsi_jawaban, kunci_jawaban } = req.body;
-    const sql = "INSERT INTO soal_akademik (kuis_id, tipe_soal, pertanyaan, opsi_jawaban, kunci_jawaban) VALUES (?, ?, ?, ?, ?)";
-    db.query(sql, [kuis_id, tipe_soal, pertanyaan, opsi_jawaban, kunci_jawaban], (err, result) => {
-        if (err) return res.status(500).json({ success: false, message: 'Gagal menyimpan soal' });
-        res.json({ success: true, message: 'Soal berhasil disimpan' });
-    });
-});
-
-// API: Hapus Soal Akademik
-app.delete('/api/admin/soal/:id', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
-    db.query("DELETE FROM soal_akademik WHERE id = ?", [req.params.id], (err, result) => {
-        if (err) return res.status(500).json({ success: false, message: 'Gagal menghapus soal' });
-        res.json({ success: true, message: 'Soal berhasil dihapus' });
-    });
-});
-
-// ============================================================================
-// ─── 33. API ADMIN: LAPORAN PSIKOGRAM (DIPERBAIKI) ───
-// ============================================================================
+// 418. API ADMIN: LAPORAN PSIKOGRAM (DIPERBAIKI)
 app.get('/api/admin/laporan-psikogram', authenticateToken, authorizeRole(['admin', 'hr']), (req, res) => {
-    // Mengirimkan data format utuh agar grafik dan tabel frontend langsung menyala
     res.json({
         success: true, 
         data: {
